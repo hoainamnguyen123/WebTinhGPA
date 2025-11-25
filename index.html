@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator Pro</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
@@ -126,89 +123,161 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 lg:p-8 text-slate-800">
 
-    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+    <div class="w-full max-w-6xl space-y-8 animate-fade-in">
         
-        <!-- LEFT COLUMN: INPUTS & ANALYSIS & CHAT -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             
-            <!-- Header Section -->
-            <div class="glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg">
-                <h1 class="text-3xl font-bold text-slate-800 mb-2 flex items-center gap-3">
-                    <i class="fa-solid fa-graduation-cap text-primary"></i> GPA Calculator
-                </h1>
-                <p class="text-slate-500">Công cụ tính điểm & Hoạch định lộ trình học tập</p>
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2 flex items-center gap-3">
+                        <i class="fa-solid fa-graduation-cap text-primary"></i> GPA Calculator
+                    </h1>
+                    <p class="text-slate-500">Công cụ tính điểm & Hoạch định lộ trình học tập</p>
 
-                <!-- Current Stats Input -->
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="relative group">
-                        <label class="block text-sm font-semibold text-slate-600 mb-2">GPA Hiện Tại (Thang 4)</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fa-solid fa-star text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="relative group">
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">GPA Hiện Tại (Thang 4)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-star text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                                </div>
+                                <input type="number" id="currentGpa" step="0.01" min="0" max="4" placeholder="VD: 3.20" 
+                                    class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm text-lg font-medium">
                             </div>
-                            <input type="number" id="currentGpa" step="0.01" min="0" max="4" placeholder="VD: 3.20" 
-                                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm text-lg font-medium">
+                        </div>
+                        
+                        <div class="relative group">
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Tổng Tín Chỉ Đã Học</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-book text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                                </div>
+                                <input type="number" id="currentCredits" min="0" placeholder="VD: 80" 
+                                    class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm text-lg font-medium">
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="relative group">
-                        <label class="block text-sm font-semibold text-slate-600 mb-2">Tổng Tín Chỉ Đã Học</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fa-solid fa-book text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg" style="animation-delay: 0.1s;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Môn Học Mới</h2>
+                        <button onclick="addSubjectRow()" class="bg-white hover:bg-slate-50 text-primary font-semibold py-2 px-4 border border-primary/20 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Thêm Môn
+                        </button>
+                    </div>
+
+                    <div class="hidden md:grid grid-cols-12 gap-4 mb-2 px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <div class="col-span-6">Tên Môn Học</div>
+                        <div class="col-span-2 text-center">Tín Chỉ</div>
+                        <div class="col-span-3 text-center">Điểm Số</div>
+                        <div class="col-span-1"></div>
+                    </div>
+
+                    <div id="subjectsContainer" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 pb-2">
+                        </div>
+
+                    <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-200 pt-6">
+                        <button onclick="calculate()" class="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-indigo-600 hover:to-violet-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-500/30 transform transition-all active:scale-95 flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Tính Toán & Phân Tích
+                        </button>
+                        <button onclick="resetForm()" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-red-500 font-medium transition-colors">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-1 animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="glass-panel rounded-2xl p-6 md:p-8 sticky top-8 shadow-xl">
+                    <h2 class="text-lg font-bold text-slate-800 mb-6 text-center uppercase tracking-wide border-b border-slate-100 pb-4">Kết Quả Dự Kiến</h2>
+
+                    <div class="flex flex-col items-center justify-center py-4">
+                        <div class="relative w-48 h-48 group">
+                            <svg class="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" stroke-width="8"></circle>
+                                <circle id="gpaCircle" cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="8" 
+                                    stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" class="transition-all duration-1000 ease-out"></circle>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#6366f1" />
+                                        <stop offset="100%" stop-color="#8b5cf6" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-sm text-slate-400 font-medium">GPA Mới</span>
+                                <span id="resultGPA" class="text-5xl font-bold text-slate-800 group-hover:scale-110 transition-transform">--</span>
+                                <span id="gpaDifference" class="text-xs font-bold mt-2 px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
+                                    0.00
+                                </span>
                             </div>
-                            <input type="number" id="currentCredits" min="0" placeholder="VD: 80" 
-                                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm text-lg font-medium">
+                        </div>
+                    </div>
+
+                    <div id="classification" class="mt-4 text-center py-3 rounded-xl text-sm font-bold uppercase tracking-wider bg-slate-100 text-slate-400 transition-colors duration-300">
+                        Chưa có dữ liệu
+                    </div>
+
+                    <div class="space-y-3 mt-8">
+                        <div class="bg-white/60 rounded-xl p-4 flex justify-between items-center border border-white/50 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </div>
+                                <span class="text-xs text-slate-500 font-bold uppercase">Tổng TC</span>
+                            </div>
+                            <span id="resultTotalCredits" class="text-lg font-bold text-slate-800">--</span>
+                        </div>
+                        <div class="bg-white/60 rounded-xl p-4 flex justify-between items-center border border-white/50 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                 <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-plus"></i>
+                                </div>
+                                <span class="text-xs text-slate-500 font-bold uppercase">Môn Mới</span>
+                            </div>
+                            <span id="addedSubjectsCount" class="text-lg font-bold text-slate-800">0</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-8 border-t border-slate-200/60">
+                        <div class="text-center">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Developed By</p>
+                            <h3 class="text-xl font-extrabold text-gradient-name mb-4">
+                                Nguyễn Hoài Nam
+                            </h3>
+                            
+                            <div class="flex justify-center gap-3">
+                                <a href="https://www.facebook.com/nguyen.nam0812hb" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </a>
+                                <a href="https://www.instagram.com/nhoainam0812/" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-pink-600 hover:text-white hover:border-pink-600 transition-all shadow-sm">
+                                    <i class="fa-brands fa-instagram"></i>
+                                </a>
+                                <a href="mailto:namtlhb68@gmail.com" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all shadow-sm">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- New Subjects Section -->
-            <div class="glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg" style="animation-delay: 0.1s;">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-slate-800">Môn Học Mới</h2>
-                    <button onclick="addSubjectRow()" class="bg-white hover:bg-slate-50 text-primary font-semibold py-2 px-4 border border-primary/20 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Thêm Môn
-                    </button>
-                </div>
-
-                <!-- Header Row (Hidden on Mobile) -->
-                <div class="hidden md:grid grid-cols-12 gap-4 mb-2 px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    <div class="col-span-6">Tên Môn Học</div>
-                    <div class="col-span-2 text-center">Tín Chỉ</div>
-                    <div class="col-span-3 text-center">Điểm Số</div>
-                    <div class="col-span-1"></div>
-                </div>
-
-                <!-- Rows Container -->
-                <div id="subjectsContainer" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 pb-2">
-                    <!-- JavaScript will inject rows here -->
-                </div>
-
-                <!-- Actions -->
-                <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-200 pt-6">
-                    <button onclick="calculate()" class="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-indigo-600 hover:to-violet-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-500/30 transform transition-all active:scale-95 flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-bolt"></i> Tính Toán & Phân Tích
-                    </button>
-                    <button onclick="resetForm()" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-red-500 font-medium transition-colors">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- AI ANALYSIS & TARGETS -->
-            <div id="aiAnalysisSection" class="hidden glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg border-l-4 border-emerald-500" style="animation-delay: 0.2s;">
+        </div> 
+        <div class="space-y-6">
+            
+            <div id="aiAnalysisSection" class="hidden glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg border-l-4 border-emerald-500" style="animation-delay: 0.3s;">
                 <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-chart-line text-emerald-500"></i> Phân Tích Lộ Trình
                 </h3>
                 
                 <p id="analysisSummary" class="text-slate-600 mb-6 leading-relaxed">
-                    <!-- Dynamic Summary Text -->
-                </p>
+                    </p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <!-- Target Cards -->
                     <div class="bg-white/60 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
                         <div class="text-xs font-bold text-slate-500 uppercase mb-1">Mục tiêu Khá</div>
                         <div class="text-2xl font-bold text-amber-500">2.50+</div>
@@ -227,9 +296,7 @@
                 </div>
             </div>
 
-             <!-- AI Chat Interface (Moved to Bottom) -->
-             <div id="aiChatSection" class="hidden glass-panel rounded-2xl p-0 animate-slide-up overflow-hidden flex flex-col h-[400px] shadow-lg" style="animation-delay: 0.3s;">
-                <!-- Chat Header -->
+             <div id="aiChatSection" class="hidden glass-panel rounded-2xl p-0 animate-slide-up overflow-hidden flex flex-col h-[400px] shadow-lg" style="animation-delay: 0.4s;">
                 <div class="bg-slate-800 p-4 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-lg">
                         <i class="fa-solid fa-robot"></i>
@@ -243,12 +310,9 @@
                     </div>
                 </div>
 
-                <!-- Chat Messages Area -->
                 <div id="chatMessages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 bg-slate-50/50">
-                    <!-- Messages will appear here -->
-                </div>
+                    </div>
 
-                <!-- Chat Input Area -->
                 <div class="p-4 bg-white border-t border-slate-100 flex gap-3">
                     <input type="text" id="userChatInput" placeholder="Hỏi AI về cách cải thiện điểm..." 
                         class="flex-1 bg-slate-100 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm"
@@ -259,92 +323,8 @@
                 </div>
             </div>
 
+        </div> 
         </div>
-
-        <!-- RIGHT COLUMN: RESULT & CONTACT -->
-        <div class="lg:col-span-1 flex flex-col gap-6 animate-slide-up" style="animation-delay: 0.4s;">
-            <div class="glass-panel rounded-2xl p-6 md:p-8 flex-1 flex flex-col sticky top-8 shadow-xl">
-                <h2 class="text-lg font-bold text-slate-800 mb-6 text-center uppercase tracking-wide border-b border-slate-100 pb-4">Kết Quả Dự Kiến</h2>
-
-                <!-- Main GPA Display -->
-                <div class="flex-1 flex flex-col items-center justify-center py-4">
-                    <div class="relative w-48 h-48 group">
-                        <!-- Circular Progress Background -->
-                        <svg class="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" stroke-width="8"></circle>
-                            <!-- Progress Circle (Dynamic) -->
-                            <circle id="gpaCircle" cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="8" 
-                                stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" class="transition-all duration-1000 ease-out"></circle>
-                            <defs>
-                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#6366f1" />
-                                    <stop offset="100%" stop-color="#8b5cf6" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                        
-                        <!-- Text inside circle -->
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-sm text-slate-400 font-medium">GPA Mới</span>
-                            <span id="resultGPA" class="text-5xl font-bold text-slate-800 group-hover:scale-110 transition-transform">--</span>
-                            <span id="gpaDifference" class="text-xs font-bold mt-2 px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
-                                0.00
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Classification Badge -->
-                <div id="classification" class="mt-4 text-center py-3 rounded-xl text-sm font-bold uppercase tracking-wider bg-slate-100 text-slate-400 transition-colors duration-300">
-                    Chưa có dữ liệu
-                </div>
-
-                <!-- Detailed Stats -->
-                <div class="space-y-3 mt-8">
-                    <div class="bg-white/60 rounded-xl p-4 flex justify-between items-center border border-white/50 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-layer-group"></i>
-                            </div>
-                            <span class="text-xs text-slate-500 font-bold uppercase">Tổng TC</span>
-                        </div>
-                        <span id="resultTotalCredits" class="text-lg font-bold text-slate-800">--</span>
-                    </div>
-                    <div class="bg-white/60 rounded-xl p-4 flex justify-between items-center border border-white/50 shadow-sm">
-                        <div class="flex items-center gap-3">
-                             <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-plus"></i>
-                            </div>
-                            <span class="text-xs text-slate-500 font-bold uppercase">Môn Mới</span>
-                        </div>
-                        <span id="addedSubjectsCount" class="text-lg font-bold text-slate-800">0</span>
-                    </div>
-                </div>
-
-                <!-- PROFESSIONAL DEVELOPER FOOTER -->
-                <div class="mt-auto pt-8 border-t border-slate-200/60">
-                    <div class="text-center">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Developed By</p>
-                        <h3 class="text-xl font-extrabold text-gradient-name mb-4">
-                            Nguyễn Hoài Nam
-                        </h3>
-                        
-                        <div class="flex justify-center gap-3">
-                            <a href="https://www.facebook.com/nguyen.nam0812hb" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
-                                <i class="fa-brands fa-facebook-f"></i>
-                            </a>
-                            <a href="https://www.instagram.com/nhoainam0812/" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-pink-600 hover:text-white hover:border-pink-600 transition-all shadow-sm">
-                                <i class="fa-brands fa-instagram"></i>
-                            </a>
-                            <a href="mailto:namtlhb68@gmail.com" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all shadow-sm">
-                                <i class="fa-solid fa-envelope"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         // --- Constants & Utils ---
@@ -374,13 +354,11 @@
             div.id = rowId;
             
             div.innerHTML = `
-                <!-- Name Input -->
                 <div class="md:col-span-6">
                     <input type="text" placeholder="Tên môn học (VD: Toán CC)" 
                         class="w-full bg-transparent border-b border-transparent hover:border-slate-200 focus:border-primary focus:bg-slate-50 px-2 py-1 outline-none transition-all text-sm md:text-base text-slate-700 font-medium">
                 </div>
                 
-                <!-- Credits Select -->
                 <div class="md:col-span-2 relative">
                     <label class="md:hidden text-xs font-bold text-slate-400 mb-1 block">Số TC</label>
                     <select class="credit-input w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none font-semibold text-slate-700 cursor-pointer hover:bg-white transition-colors">
@@ -392,7 +370,6 @@
                     </select>
                 </div>
                 
-                <!-- Grade Select (SIMPLIFIED A,B,C,D,F) -->
                 <div class="md:col-span-3 relative">
                     <label class="md:hidden text-xs font-bold text-slate-400 mb-1 block">Điểm</label>
                     <select class="grade-input w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none font-bold text-primary cursor-pointer hover:bg-white transition-colors">
@@ -404,7 +381,6 @@
                     </select>
                 </div>
                 
-                <!-- Delete Button -->
                 <div class="md:col-span-1 flex justify-end md:justify-center">
                     <button onclick="removeSubjectRow('${rowId}')" class="text-slate-300 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50">
                         <i class="fa-solid fa-trash-can"></i>
@@ -488,6 +464,9 @@
             // Trigger AI Modules
             analyzeData(newGPA, totalCredits, totalPoints, currentGPA);
             initAIChat(newGPA, currentGPA);
+            
+            // Scroll to analysis
+            getElement('aiAnalysisSection').scrollIntoView({ behavior: 'smooth' });
         }
 
         function displayResults(newGPA, totalCredits, oldGPA, count) {
