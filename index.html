@@ -363,8 +363,6 @@
 
         window.onload = function() {
             addSubjectRow();
-            addSubjectRow();
-            addSubjectRow();
         };
 
         function addSubjectRow() {
@@ -623,7 +621,7 @@
         }
 
         async function callGeminiAPI(userMessage, currentGPA) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=AIzaSyD8SIYvKHimJdK4XVVn04L74Mol2xXS3YY`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=AIzaSyArNJWh82C0vI-fhNoZK3upl14d8g27ZyU`;
             
             const systemPrompt = `Bạn là một trợ lý ảo thông minh được tích hợp trong ứng dụng 'GPA Calculator Pro' của Nguyễn Hoài Nam.
             Nhiệm vụ của bạn là tư vấn học tập cho sinh viên.
@@ -632,7 +630,7 @@
             Hướng dẫn trả lời:
             1. Trả lời ngắn gọn, súc tích (dưới 100 từ).
             2. Giọng điệu thân thiện, tích cực, khuyến khích (kiểu bạn bè hỗ trợ nhau).
-            3. Dựa vào GPA để đưa ra lời khuyên phù hợp (VD: GPA thấp thì động viên, GPA cao thì hướng dẫn săn học bổng).
+            3. Dựa vào GPA để đưa ra lời khuyên phù hợp (VD: GPA thấp thì động viên, GPA cao thì hướng dẫn săn học bổng,khen theo phong cách đẳng cấp).
             4. Trả lời bằng tiếng Việt.`;
 
             const payload = {
