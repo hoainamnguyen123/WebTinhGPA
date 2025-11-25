@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1', // Indigo 500
+                        secondary: '#8b5cf6', // Violet 500
+                        dark: '#0f172a',
+                        glass: 'rgba(255, 255, 255, 0.9)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'bounce-slow': 'bounce 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        /* Chat bubbles */
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .chat-user {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-ai {
+            background: #f1f5f9;
+            color: #334155;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border: 1px solid #e2e8f0;
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+            width: 6px;
+            height: 6px;
+            background-color: #94a3b8;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 1px;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        /* Gradient Text Name */
+        .text-gradient-name {
+            background: linear-gradient(to right, #4f46e5, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom Select Styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 lg:p-8 text-slate-800">
+
+    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+        
+        <!-- LEFT COLUMN: INPUTS & ANALYSIS & CHAT -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Header Section -->
+            <div class="glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg">
+                <h1 class="text-3xl font-bold text-slate-800 mb-2 flex items-center gap-3">
+                    <i class="fa-solid fa-graduation-cap text-primary"></i> GPA Calculator
+                </h1>
+                <p class="text-slate-500">Công cụ tính điểm & Hoạch định lộ trình học tập</p>
+
+                <!-- Current Stats Input -->
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="relative group">
+                        <label class="block text-sm font-semibold text-slate-600 mb-2">GPA Hiện Tại (Thang 4)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-star text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                            <input type="number" id="currentGpa" step="0.01" min="0" max="4" placeholder="VD: 3.20" 
+                                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm text-lg font-medium">
+                        </div>
+                    </div>
+                    
+                    <div class="relative group">
+                        <label class="block text-sm font-semibold text-slate-600 mb-2">Tổng Tín Chỉ Đã Học</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-book text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                            <input type="number" id="currentCredits" min="0" placeholder="VD: 80" 
+                                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm text-lg font-medium">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Subjects Section -->
+            <div class="glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg" style="animation-delay: 0.1s;">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-slate-800">Môn Học Mới</h2>
+                    <button onclick="addSubjectRow()" class="bg-white hover:bg-slate-50 text-primary font-semibold py-2 px-4 border border-primary/20 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Thêm Môn
+                    </button>
+                </div>
+
+                <!-- Header Row (Hidden on Mobile) -->
+                <div class="hidden md:grid grid-cols-12 gap-4 mb-2 px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    <div class="col-span-6">Tên Môn Học</div>
+                    <div class="col-span-2 text-center">Tín Chỉ</div>
+                    <div class="col-span-3 text-center">Điểm Số</div>
+                    <div class="col-span-1"></div>
+                </div>
+
+                <!-- Rows Container -->
+                <div id="subjectsContainer" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 pb-2">
+                    <!-- JavaScript will inject rows here -->
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-200 pt-6">
+                    <button onclick="calculate()" class="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-indigo-600 hover:to-violet-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-500/30 transform transition-all active:scale-95 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Tính Toán & Phân Tích
+                    </button>
+                    <button onclick="resetForm()" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-red-500 font-medium transition-colors">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI ANALYSIS & TARGETS -->
+            <div id="aiAnalysisSection" class="hidden glass-panel rounded-2xl p-6 md:p-8 animate-slide-up shadow-lg border-l-4 border-emerald-500" style="animation-delay: 0.2s;">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-emerald-500"></i> Phân Tích Lộ Trình
+                </h3>
+                
+                <p id="analysisSummary" class="text-slate-600 mb-6 leading-relaxed">
+                    <!-- Dynamic Summary Text -->
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Target Cards -->
+                    <div class="bg-white/60 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-slate-500 uppercase mb-1">Mục tiêu Khá</div>
+                        <div class="text-2xl font-bold text-amber-500">2.50+</div>
+                        <div id="adviceKha" class="text-xs text-slate-600 mt-2 font-medium bg-white/80 p-2 rounded-lg inline-block w-full">--</div>
+                    </div>
+                    <div class="bg-white/60 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-slate-500 uppercase mb-1">Mục tiêu Giỏi</div>
+                        <div class="text-2xl font-bold text-indigo-500">3.20+</div>
+                        <div id="adviceGioi" class="text-xs text-slate-600 mt-2 font-medium bg-white/80 p-2 rounded-lg inline-block w-full">--</div>
+                    </div>
+                    <div class="bg-white/60 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-slate-500 uppercase mb-1">Mục tiêu Xuất Sắc</div>
+                        <div class="text-2xl font-bold text-emerald-500">3.60+</div>
+                        <div id="adviceXuatSac" class="text-xs text-slate-600 mt-2 font-medium bg-white/80 p-2 rounded-lg inline-block w-full">--</div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- AI Chat Interface (Moved to Bottom) -->
+             <div id="aiChatSection" class="hidden glass-panel rounded-2xl p-0 animate-slide-up overflow-hidden flex flex-col h-[400px] shadow-lg" style="animation-delay: 0.3s;">
+                <!-- Chat Header -->
+                <div class="bg-slate-800 p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-lg">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-lg">Trợ Lý AI (Gemini)</h3>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                            <span class="text-slate-300 text-xs">Sẵn sàng tư vấn 1-1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 bg-slate-50/50">
+                    <!-- Messages will appear here -->
+                </div>
+
+                <!-- Chat Input Area -->
+                <div class="p-4 bg-white border-t border-slate-100 flex gap-3">
+                    <input type="text" id="userChatInput" placeholder="Hỏi AI về cách cải thiện điểm..." 
+                        class="flex-1 bg-slate-100 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm"
+                        onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button onclick="sendMessage()" id="sendBtn" class="w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: RESULT & CONTACT -->
+        <div class="lg:col-span-1 flex flex-col gap-6 animate-slide-up" style="animation-delay: 0.4s;">
+            <div class="glass-panel rounded-2xl p-6 md:p-8 flex-1 flex flex-col sticky top-8 shadow-xl">
+                <h2 class="text-lg font-bold text-slate-800 mb-6 text-center uppercase tracking-wide border-b border-slate-100 pb-4">Kết Quả Dự Kiến</h2>
+
+                <!-- Main GPA Display -->
+                <div class="flex-1 flex flex-col items-center justify-center py-4">
+                    <div class="relative w-48 h-48 group">
+                        <!-- Circular Progress Background -->
+                        <svg class="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" stroke-width="8"></circle>
+                            <!-- Progress Circle (Dynamic) -->
+                            <circle id="gpaCircle" cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="8" 
+                                stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" class="transition-all duration-1000 ease-out"></circle>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#6366f1" />
+                                    <stop offset="100%" stop-color="#8b5cf6" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        
+                        <!-- Text inside circle -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-sm text-slate-400 font-medium">GPA Mới</span>
+                            <span id="resultGPA" class="text-5xl font-bold text-slate-800 group-hover:scale-110 transition-transform">--</span>
+                            <span id="gpaDifference" class="text-xs font-bold mt-2 px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
+                                0.00
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classification Badge -->
+                <div id="classification" class="mt-4 text-center py-3 rounded-xl text-sm font-bold uppercase tracking-wider bg-slate-100 text-slate-400 transition-colors duration-300">
+                    Chưa có dữ liệu
+                </div>
+
+                <!-- Detailed Stats -->
+                <div class="space-y-3 mt-8">
+                    <div class="bg-white/60 rounded-xl p-4 flex justify-between items-center border border-white/50 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <span class="text-xs text-slate-500 font-bold uppercase">Tổng TC</span>
+                        </div>
+                        <span id="resultTotalCredits" class="text-lg font-bold text-slate-800">--</span>
+                    </div>
+                    <div class="bg-white/60 rounded-xl p-4 flex justify-between items-center border border-white/50 shadow-sm">
+                        <div class="flex items-center gap-3">
+                             <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <span class="text-xs text-slate-500 font-bold uppercase">Môn Mới</span>
+                        </div>
+                        <span id="addedSubjectsCount" class="text-lg font-bold text-slate-800">0</span>
+                    </div>
+                </div>
+
+                <!-- PROFESSIONAL DEVELOPER FOOTER -->
+                <div class="mt-auto pt-8 border-t border-slate-200/60">
+                    <div class="text-center">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Developed By</p>
+                        <h3 class="text-xl font-extrabold text-gradient-name mb-4">
+                            Nguyễn Hoài Nam
+                        </h3>
+                        
+                        <div class="flex justify-center gap-3">
+                            <a href="#" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-pink-600 hover:text-white hover:border-pink-600 transition-all shadow-sm">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                            <a href="#" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all shadow-sm">
+                                <i class="fa-solid fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants & Utils ---
+        const apiKey = ""; // API Key được inject tự động
+        const CIRCUMFERENCE = 283; 
+        
+        function formatNumber(num) {
+            return parseFloat(num).toFixed(2);
+        }
+
+        function getElement(id) {
+            return document.getElementById(id);
+        }
+
+        // --- Core Logic ---
+
+        window.onload = function() {
+            addSubjectRow();
+            addSubjectRow();
+            addSubjectRow();
+        };
+
+        function addSubjectRow() {
+            const container = getElement('subjectsContainer');
+            const rowId = 'row-' + Date.now();
+            
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 bg-white p-4 md:p-3 rounded-xl border border-slate-100 shadow-sm items-center animate-fade-in group hover:border-primary/30 transition-colors';
+            div.id = rowId;
+            
+            div.innerHTML = `
+                <!-- Name Input -->
+                <div class="md:col-span-6">
+                    <input type="text" placeholder="Tên môn học (VD: Toán CC)" 
+                        class="w-full bg-transparent border-b border-transparent hover:border-slate-200 focus:border-primary focus:bg-slate-50 px-2 py-1 outline-none transition-all text-sm md:text-base text-slate-700 font-medium">
+                </div>
+                
+                <!-- Credits Select -->
+                <div class="md:col-span-2 relative">
+                    <label class="md:hidden text-xs font-bold text-slate-400 mb-1 block">Số TC</label>
+                    <select class="credit-input w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none font-semibold text-slate-700 cursor-pointer hover:bg-white transition-colors">
+                        <option value="1">1 TC</option>
+                        <option value="2">2 TC</option>
+                        <option value="3" selected>3 TC</option>
+                        <option value="4">4 TC</option>
+                        <option value="10">10 TC</option>
+                    </select>
+                </div>
+                
+                <!-- Grade Select (SIMPLIFIED A,B,C,D,F) -->
+                <div class="md:col-span-3 relative">
+                    <label class="md:hidden text-xs font-bold text-slate-400 mb-1 block">Điểm</label>
+                    <select class="grade-input w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none font-bold text-primary cursor-pointer hover:bg-white transition-colors">
+                        <option value="4.0">A (4.0)</option>
+                        <option value="3.0">B (3.0)</option>
+                        <option value="2.0">C (2.0)</option>
+                        <option value="1.0">D (1.0)</option>
+                        <option value="0.0">F (0.0)</option>
+                    </select>
+                </div>
+                
+                <!-- Delete Button -->
+                <div class="md:col-span-1 flex justify-end md:justify-center">
+                    <button onclick="removeSubjectRow('${rowId}')" class="text-slate-300 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(div);
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+        }
+
+        function removeSubjectRow(id) {
+            const row = document.getElementById(id);
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                row.remove();
+            }, 300);
+        }
+
+        function resetForm() {
+            if(confirm("Bạn có chắc chắn muốn xóa hết dữ liệu không?")) {
+                getElement('currentGpa').value = '';
+                getElement('currentCredits').value = '';
+                getElement('subjectsContainer').innerHTML = '';
+                addSubjectRow();
+                addSubjectRow();
+                addSubjectRow();
+                
+                // Reset Display
+                getElement('resultGPA').innerText = '--';
+                getElement('resultTotalCredits').innerText = '--';
+                getElement('addedSubjectsCount').innerText = '0';
+                getElement('gpaDifference').innerText = '0.00';
+                getElement('gpaDifference').className = 'text-xs font-bold mt-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-400';
+                
+                // Hide Analysis & Chat
+                getElement('aiAnalysisSection').classList.add('hidden');
+                getElement('aiChatSection').classList.add('hidden');
+                
+                updateCircle(0);
+                updateClassification(null);
+            }
+        }
+
+        function calculate() {
+            const currentGPA = parseFloat(getElement('currentGpa').value);
+            const currentCredits = parseInt(getElement('currentCredits').value);
+
+            if (isNaN(currentGPA) || isNaN(currentCredits)) {
+                alert("Vui lòng nhập đầy đủ GPA hiện tại và số tín chỉ đã học!");
+                return;
+            }
+
+            let totalPoints = currentGPA * currentCredits;
+            let totalCredits = currentCredits;
+            let addedSubjects = 0;
+
+            const creditInputs = document.getElementsByClassName('credit-input');
+            const gradeInputs = document.getElementsByClassName('grade-input');
+
+            for (let i = 0; i < creditInputs.length; i++) {
+                const credit = parseInt(creditInputs[i].value);
+                const grade = parseFloat(gradeInputs[i].value);
+
+                if (!isNaN(credit) && !isNaN(grade)) {
+                    totalPoints += (grade * credit);
+                    totalCredits += credit;
+                    addedSubjects++;
+                }
+            }
+
+            if (addedSubjects === 0 && totalCredits === currentCredits) {
+                alert("Vui lòng thêm ít nhất một môn học mới!");
+                return;
+            }
+
+            const newGPA = totalCredits === 0 ? 0 : (totalPoints / totalCredits);
+            displayResults(newGPA, totalCredits, currentGPA, addedSubjects);
+
+            // Trigger AI Modules
+            analyzeData(newGPA, totalCredits, totalPoints, currentGPA);
+            initAIChat(newGPA, currentGPA);
+        }
+
+        function displayResults(newGPA, totalCredits, oldGPA, count) {
+            animateValue(getElement('resultGPA'), parseFloat(getElement('resultGPA').innerText) || 0, newGPA, 1000);
+            getElement('resultTotalCredits').innerText = totalCredits;
+            getElement('addedSubjectsCount').innerText = count;
+
+            const diff = newGPA - oldGPA;
+            const diffEl = getElement('gpaDifference');
+            const diffText = (diff > 0 ? '+' : '') + formatNumber(diff);
+            
+            diffEl.innerText = diffText;
+            if(diff > 0) {
+                diffEl.className = 'text-xs font-bold mt-2 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600';
+            } else if (diff < 0) {
+                diffEl.className = 'text-xs font-bold mt-2 px-2 py-0.5 rounded-full bg-red-100 text-red-600';
+            } else {
+                diffEl.className = 'text-xs font-bold mt-2 px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
+            }
+
+            updateCircle(newGPA);
+            updateClassification(newGPA);
+        }
+
+        // --- NEW: ANALYSIS LOGIC (Restored) ---
+        function analyzeData(currentGPA, currentTotalCredits, currentTotalPoints, oldGPA) {
+            const section = getElement('aiAnalysisSection');
+            section.classList.remove('hidden');
+
+            // 1. Summary Text
+            let summary = "";
+            if (currentGPA >= 3.6) {
+                summary = `Tuyệt vời! GPA <strong>${formatNumber(currentGPA)}</strong> thuộc mức <span class="text-emerald-600 font-bold">Xuất sắc</span>. Bạn đã làm rất tốt. Hãy duy trì để đạt học bổng kỳ tới!`;
+            } else if (currentGPA >= 3.2) {
+                summary = `Bạn đang ở mức <span class="text-indigo-600 font-bold">Giỏi</span> (${formatNumber(currentGPA)}). Chỉ còn một khoảng cách nhỏ nữa là đến mức Xuất sắc.`;
+            } else if (currentGPA >= 2.5) {
+                summary = `GPA <strong>${formatNumber(currentGPA)}</strong> đang ở mức <span class="text-amber-600 font-bold">Khá</span>. Đây là mức an toàn, nhưng hãy cố gắng cải thiện điểm các môn chuyên ngành.`;
+            } else {
+                summary = `GPA hiện tại là <strong>${formatNumber(currentGPA)}</strong>. Đừng nản lòng, hãy tập trung vào các môn có tín chỉ cao để kéo điểm lên nhanh nhất.`;
+            }
+            getElement('analysisSummary').innerHTML = summary;
+
+            // 2. Calculate Targets
+            calculateCreditsNeeded('adviceKha', 2.5, currentGPA, currentTotalCredits, currentTotalPoints);
+            calculateCreditsNeeded('adviceGioi', 3.2, currentGPA, currentTotalCredits, currentTotalPoints);
+            calculateCreditsNeeded('adviceXuatSac', 3.6, currentGPA, currentTotalCredits, currentTotalPoints);
+        }
+
+        function calculateCreditsNeeded(elementId, targetGPA, currentGPA, totalCredits, totalPoints) {
+            const el = getElement(elementId);
+            
+            if (currentGPA >= targetGPA) {
+                el.innerHTML = "<span class='text-emerald-500 font-bold'><i class='fa-solid fa-check-circle'></i> Đã đạt được</span>";
+                return;
+            }
+
+            if (targetGPA >= 4.0) { el.innerText = "Không khả thi"; return; }
+
+            const numerator = (targetGPA * totalCredits) - totalPoints;
+            const denominator = 4.0 - targetGPA;
+            
+            if (denominator <= 0) { el.innerText = "Rất khó đạt"; return; }
+            
+            const neededCredits = Math.ceil(numerator / denominator);
+            
+            if (neededCredits > 120) {
+                 el.innerText = "> 120 TC điểm A (Rất khó)";
+            } else {
+                 el.innerHTML = `Cần khoảng <span class='font-bold text-slate-800'>${neededCredits} TC</span> điểm A`;
+            }
+        }
+
+        // --- REAL AI CHAT LOGIC WITH GEMINI API ---
+        let currentCalculatedGPA = 0;
+
+        function initAIChat(gpa, oldGpa) {
+            currentCalculatedGPA = gpa;
+            const chatSection = getElement('aiChatSection');
+            const chatMessages = getElement('chatMessages');
+            
+            chatSection.classList.remove('hidden');
+            chatMessages.innerHTML = ''; // Clear old chat
+
+            // Initial Message (Local Logic for Speed)
+            let message = "";
+            if (gpa > oldGpa) {
+                message = `Chào bạn, mình thấy GPA của bạn đã tăng lên ${formatNumber(gpa)} 🎉. Bạn có muốn mình tư vấn cách duy trì phong độ này không?`;
+            } else if (gpa < oldGpa) {
+                message = `Chào bạn, GPA có vẻ giảm nhẹ xuống ${formatNumber(gpa)}. Đừng lo, mình có thể giúp bạn phân tích nguyên nhân. Bạn đang gặp khó khăn môn nào?`;
+            } else {
+                message = `Chào bạn. GPA của bạn giữ nguyên ở mức ${formatNumber(gpa)}. Bạn cần lời khuyên gì để bứt phá trong kỳ tới không?`;
+            }
+            addAiMessage(message);
+        }
+
+        async function sendMessage() {
+            const input = getElement('userChatInput');
+            const sendBtn = getElement('sendBtn');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. Add user message
+            const chatMessages = getElement('chatMessages');
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-bubble chat-user';
+            userDiv.innerText = text;
+            chatMessages.appendChild(userDiv);
+            
+            input.value = '';
+            input.disabled = true;
+            sendBtn.disabled = true;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 2. Show Typing
+            showTyping();
+            
+            try {
+                // 3. Call Gemini API
+                const aiResponse = await callGeminiAPI(text, currentCalculatedGPA);
+                removeTyping();
+                addAiMessage(aiResponse);
+            } catch (error) {
+                removeTyping();
+                addAiMessage("Xin lỗi, mình đang gặp sự cố kết nối. Bạn thử lại sau nhé!");
+                console.error(error);
+            } finally {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        async function callGeminiAPI(userMessage, currentGPA) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const systemPrompt = `Bạn là một trợ lý ảo thông minh được tích hợp trong ứng dụng 'GPA Calculator Pro' của Nguyễn Hoài Nam.
+            Nhiệm vụ của bạn là tư vấn học tập cho sinh viên.
+            Thông tin quan trọng: GPA dự kiến hiện tại của sinh viên là ${formatNumber(currentGPA)} (Thang điểm 4).
+            
+            Hướng dẫn trả lời:
+            1. Trả lời ngắn gọn, súc tích (dưới 100 từ).
+            2. Giọng điệu thân thiện, tích cực, khuyến khích (kiểu bạn bè hỗ trợ nhau).
+            3. Dựa vào GPA để đưa ra lời khuyên phù hợp (VD: GPA thấp thì động viên, GPA cao thì hướng dẫn săn học bổng).
+            4. Trả lời bằng tiếng Việt.`;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: userMessage }]
+                }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error('API Request failed');
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        function showTyping() {
+            const chatMessages = getElement('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'aiTyping';
+            typingDiv.className = 'chat-bubble chat-ai';
+            typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typingDiv = document.getElementById('aiTyping');
+            if (typingDiv) typingDiv.remove();
+        }
+
+        function addAiMessage(text) {
+            const chatMessages = getElement('chatMessages');
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'chat-bubble chat-ai';
+            
+            // Format simple markdown (bold) if needed, simple replacement
+            const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            aiDiv.innerHTML = formattedText;
+            chatMessages.appendChild(aiDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function updateCircle(gpa) {
+            const circle = getElement('gpaCircle');
+            const percentage = (gpa / 4) * 100;
+            const offset = CIRCUMFERENCE - (percentage / 100 * CIRCUMFERENCE);
+            circle.style.strokeDashoffset = offset;
+            
+            let color1, color2;
+            if (gpa >= 3.6) { color1 = '#10b981'; color2 = '#34d399'; }
+            else if (gpa >= 3.2) { color1 = '#6366f1'; color2 = '#8b5cf6'; }
+            else if (gpa >= 2.5) { color1 = '#f59e0b'; color2 = '#fbbf24'; }
+            else { color1 = '#ef4444'; color2 = '#f87171'; }
+
+            const stops = document.getElementById('gradient').children;
+            stops[0].setAttribute('stop-color', color1);
+            stops[1].setAttribute('stop-color', color2);
+        }
+
+        function updateClassification(gpa) {
+            const el = getElement('classification');
+            if (gpa === null) {
+                el.innerText = "Chưa có dữ liệu";
+                el.className = "mt-4 text-center py-3 rounded-xl text-sm font-bold uppercase tracking-wider bg-slate-100 text-slate-400";
+                return;
+            }
+            let text = "";
+            let style = "";
+            if (gpa >= 3.6) {
+                text = "Xuất Sắc";
+                style = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+            } else if (gpa >= 3.2) {
+                text = "Giỏi";
+                style = "bg-indigo-100 text-indigo-700 border border-indigo-200";
+            } else if (gpa >= 2.5) {
+                text = "Khá";
+                style = "bg-amber-100 text-amber-700 border border-amber-200";
+            } else if (gpa >= 2.0) {
+                text = "Trung Bình";
+                style = "bg-slate-200 text-slate-600 border border-slate-300";
+            } else {
+                text = "Cảnh Báo";
+                style = "bg-red-100 text-red-700 border border-red-200";
+            }
+            el.innerText = text;
+            el.className = `mt-4 text-center py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all ${style}`;
+        }
+        
+        // Animated Numbers
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = formatNumber(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+    </script>
+</body>
+</html>
